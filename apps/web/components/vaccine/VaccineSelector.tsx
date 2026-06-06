@@ -190,10 +190,12 @@ export function VaccineSelector({
                                     </div>
                                     {vaccines.map((key) => {
                                         const vaccine = vaccineDatabase[key as VaccineKey];
+                                        const allVaccines = Object.values(filteredVaccines).flat();
+                                        const optionIndex = allVaccines.indexOf(key);
                                         return (
                                             <button
                                                 key={key}
-                                                id={`${listId}-option-${String(key)}`}
+                                                id={`${listId}-option-${optionIndex}`}
                                                 onClick={() => handleSelect(key as VaccineKey)}
                                                 role="option"
                                                 onMouseEnter={() => {
@@ -201,12 +203,7 @@ export function VaccineSelector({
                                                         Object.values(filteredVaccines).flat();
                                                     setActiveIndex(allVaccines.indexOf(key));
                                                 }}
-                                                aria-selected={
-                                                    activeIndex ===
-                                                    Object.values(filteredVaccines)
-                                                        .flat()
-                                                        .indexOf(key)
-                                                }
+                                                aria-selected={activeIndex === optionIndex}
                                                 className={`w-full px-4 py-3 text-left text-sm transition-colors hover:bg-emerald-50 focus:ring-2 focus:ring-emerald-500 focus:outline-none dark:hover:bg-slate-700 dark:focus:bg-slate-700 ${
                                                     value === key
                                                         ? "bg-emerald-100 font-semibold text-emerald-900 dark:bg-emerald-900 dark:text-emerald-100"
