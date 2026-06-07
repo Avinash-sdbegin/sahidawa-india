@@ -219,6 +219,17 @@ router.post("/extract", uploadRateLimiter, validateUploadSize, (req: Request, re
         const mlServiceUrl = getMlServiceUrl();
         if (!mlServiceUrl) {
             logger.error(MISSING_ML_SERVICE_URL_MESSAGE, { route: "/api/v1/scan/extract" });
+
+            // Clean up temp file before returning
+            if (tempFilePath && fs.existsSync(tempFilePath)) {
+                try {
+                    fs.unlinkSync(tempFilePath);
+                    logger.info(`Cleaned up temp file: ${tempFilePath}`);
+                } catch (err) {
+                    logger.error(`Failed to delete temp file ${tempFilePath}:`, err);
+                }
+            }
+
             res.status(500).json({
                 error: "OCR service is not configured.",
                 code: "ML_SERVICE_URL_MISSING",
