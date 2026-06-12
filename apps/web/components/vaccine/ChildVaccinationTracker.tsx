@@ -20,7 +20,7 @@ import {
     Download,
 } from "lucide-react";
 import { useFormatter } from "next-intl";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 
 interface ChildTrackerState {
     childName: string;
@@ -35,6 +35,7 @@ const EMPTY_TRACKER_STATE: ChildTrackerState = {
 };
 
 const CHILD_NAME_MAX_LENGTH = 80;
+const STORAGE_KEY = "sahidawa_child_tracker";
 const VALID_DOSE_IDS = new Set(NATIONAL_IMMUNIZATION_SCHEDULE.map((item) => item.id));
 const TRACKER_STORAGE_KEY = "vaccine-hub-child-tracker-v1";
 
@@ -114,11 +115,25 @@ export function ChildVaccinationTracker() {
     const dobInputId = useId();
     const todayDateInput = useMemo(() => getTodayDateInput(), []);
     const [tracker, setTracker] = useState<ChildTrackerState>(EMPTY_TRACKER_STATE);
-    const [syncContext, setSyncContext] = useState<SyncContext>({ status: "loading" });
-    const hasUserEditedRef = useRef(false);
-    const profileSyncSignatureRef = useRef<string | null>(null);
-    const cloudCompletedDoseIdsRef = useRef<Set<string>>(new Set());
+    useEffect(() => {
+        try {
+            const savedTracker = localStorage.getItem(STORAGE_KEY);
 
+            if (!savedTracker) return;
+
+            const parsed = JSON.parse(savedTracker);
+
+            setTracker({
+                childName: parsed.childName ?? "",
+                dateOfBirth: parsed.dateOfBirth ?? "",
+                completedDoseIds: Array.isArray(parsed.completedDoseIds)
+                    ? parsed.completedDoseIds.filter((id: string) => VALID_DOSE_IDS.has(id))
+                    : [],
+            });
+        } catch (error) {
+            console.error("Failed to load vaccination tracker state", error);
+        }
+    }, []);
     const dobValidation = validateChildDateOfBirth(tracker.dateOfBirth, todayDateInput);
     const schedule = useMemo(
         () =>
@@ -133,9 +148,20 @@ export function ChildVaccinationTracker() {
     );
     const statusCounts = useMemo(() => getStatusCounts(schedule), [schedule]);
     const childDisplayName = tracker.childName.trim() || TRACKER_COPY.childDefaultName;
-    const cloudUserId = syncContext.status === "cloud" ? syncContext.userId : null;
-    const cloudProfileId = syncContext.status === "cloud" ? syncContext.profileId : null;
-
+    useEffect(() => {
+        try {
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify({
+                    childName: tracker.childName,
+                    dateOfBirth: tracker.dateOfBirth,
+                    completedDoseIds: tracker.completedDoseIds,
+                })
+            );
+        } catch (error) {
+            console.error("Failed to save vaccination tracker state", error);
+        }
+    }, [tracker]);
     const validationMessage =
         !dobValidation.isValid && dobValidation.reason !== "missing"
             ? getDobValidationMessage(dobValidation.reason)
