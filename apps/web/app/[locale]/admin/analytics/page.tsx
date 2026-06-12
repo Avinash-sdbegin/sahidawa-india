@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link } from "@/i18n/routing";
+import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 import { ADMIN_API_BASE } from "@/lib/adminApi";
 import {
@@ -22,8 +23,6 @@ import {
     Send,
     XCircle,
 } from "lucide-react";
-import dynamic from "next/dynamic";
-
 const AnalyticsCharts = dynamic(() => import("@/components/admin/AnalyticsCharts"), {
     ssr: false,
     loading: () => (
@@ -32,19 +31,6 @@ const AnalyticsCharts = dynamic(() => import("@/components/admin/AnalyticsCharts
         </div>
     ),
 });
-
-const COLORS = {
-    emerald: "#10b981",
-    blue: "#3b82f6",
-    amber: "#f59e0b",
-    red: "#ef4444",
-    purple: "#8b5cf6",
-    teal: "#14b8a6",
-    slate: "#64748b",
-    rose: "#f43f5e",
-    cyan: "#06b6d4",
-    indigo: "#6366f1",
-};
 
 type PushFailureReason = {
     reason: string;
