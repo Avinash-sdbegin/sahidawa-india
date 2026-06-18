@@ -45,6 +45,18 @@ interface LocalInteraction {
     source: string;
 }
 
+interface MatchedInteraction {
+    drugA: string;
+    drugAGeneric: string;
+    drugB: string;
+    drugBGeneric: string;
+    severity: string;
+    mechanism: string;
+    description: string;
+    clinical_recommendation: string;
+    source: string;
+}
+
 const localInteractions: LocalInteraction[] = [
     {
         drug_a_id: "paracetamol",
@@ -128,9 +140,9 @@ async function resolveToGeneric(input: string): Promise<{ input: string; generic
             } else if (data && data.generic_name) {
                 genericName = data.generic_name;
             }
-        } catch (dbErr: any) {
+        } catch (dbErr: unkonwn) {
             dbFailed = true;
-            const msg = dbErr?.message || String(dbErr);
+            const msg = dbErr instanceof Error ? dbErr.message : String(dbErr);
             if (
                 msg.includes("fetch failed") ||
                 msg.includes("refused") ||
@@ -242,7 +254,7 @@ router.post("/check", async (req: Request, res: Response) => {
             }
         }
 
-        const matchedInteractions: any[] = [];
+        const matchedInteractions: MatchedInteraction[] = [];
         let dbFailed = dbConfig?.isSupabaseOffline;
 
         // 3. Query interactions for each pair
@@ -272,9 +284,9 @@ router.post("/check", async (req: Request, res: Response) => {
                         } else if (data) {
                             match = data;
                         }
-                    } catch (dbErr: any) {
+                    } catch (dbErr: unknown) {
                         dbFailed = true;
-                        const msg = dbErr?.message || String(dbErr);
+                        const msg = dbErr instanceof Error ? dbErr.message : String(dbErr);
                         if (
                             msg.includes("fetch failed") ||
                             msg.includes("refused") ||
