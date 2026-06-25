@@ -61,6 +61,8 @@ export default function UserDropdown({ session, authLoading, handleSignOut }: Us
         <div className="relative hidden sm:block" ref={profileRef}>
             <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
+                aria-label="Open user menu"
+                aria-expanded={isProfileOpen}
                 className="flex h-9 items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 sm:h-10 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
             >
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
@@ -120,6 +122,7 @@ export default function UserDropdown({ session, authLoading, handleSignOut }: Us
                         <div className="my-1 border-t border-slate-100 dark:border-slate-900" />
                         <button
                             onClick={handleSignOut}
+                            aria-label="Sign out"
                             className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
                         >
                             <LogOut size={16} />

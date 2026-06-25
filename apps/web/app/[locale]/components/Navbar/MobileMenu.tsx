@@ -69,7 +69,7 @@ export default function MobileMenu({
             <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
-                aria-label="Toggle system parameters"
+                aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
                 aria-expanded={isMenuOpen}
             >
                 {isMenuOpen ? <X size={16} /> : <Menu size={16} />}
@@ -177,6 +177,7 @@ export default function MobileMenu({
                                 <div className="my-1 border-t border-slate-100 dark:border-slate-800" />
                                 <button
                                     onClick={handleSignOut}
+                                    aria-label="Sign out"
                                     className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
                                 >
                                     <LogOut size={14} /> Sign Out
