@@ -68,7 +68,14 @@
         "current_language": "Current language: {language}",
         "toggle_theme": "Toggle theme",
         "switch_light": "Switch to light mode",
-        "switch_dark": "Switch to dark mode"
+        "switch_dark": "Switch to dark mode",
+        "confirm_clear_conversation": "Confirm clear conversation",
+        "cancel_clear_conversation": "Cancel clear conversation",
+        "go_Home": "Go to home",
+        "close_chat": "Close chat",
+        "send_message": "Send message",
+        "open_ai_chat": "Open AI chat",
+        "close_ai_chat": "Close AI chat"
     },
     "Health": {
         "quickActions": "Quick actions",
