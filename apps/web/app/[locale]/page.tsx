@@ -30,7 +30,7 @@ import { getVisibleAlertBatchNumber } from "@/lib/alertFormatting";
 import { usePredictivePrefetch } from "@/src/hooks/usePredictivePrefetch";
 
 function formatRelativeTime(dateString: string | null, locale: string): string {
-    if (!dateString) return "-";
+    if (!dateString) return "—";
 
     const now = new Date();
     const past = new Date(dateString);
