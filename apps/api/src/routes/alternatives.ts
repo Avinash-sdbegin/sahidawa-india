@@ -88,7 +88,53 @@ router.get("/:medicine_id", barcodeLimiter, async (req: Request, res: Response):
 
             if (cached) {
                 logger.info(`Alternatives cache HIT: ${cacheKey}`);
-                res.status(200).json(JSON.parse(cached));
+                const cachedData = JSON.parse(cached);
+
+                let nearestStore = null;
+
+                if (lat !== undefined && lng !== undefined) {
+                    const { data: rpcData, error: rpcError } = await supabase.rpc(
+                        "get_nearest_pharmacies",
+                        {
+                            query_lat: lat,
+                            query_lng: lng,
+                            search_radius_km: 100,
+                        }
+                    );
+
+                    if (!rpcError && rpcData && rpcData.length > 0) {
+                        nearestStore = {
+                            name: rpcData[0].name,
+                            lat: Number(rpcData[0].lat),
+                            lng: Number(rpcData[0].lng),
+                            distance: `${Number(rpcData[0].distance).toFixed(1)} km`,
+                        };
+                    }
+                }
+
+                if (!nearestStore) {
+                    const { data: defaultStores } = await supabase
+                        .from("pharmacies")
+                        .select("name,address,location")
+                        .limit(1);
+
+                    if (defaultStores && defaultStores.length > 0) {
+                        const coords = extractCoordinates(defaultStores[0]);
+
+                        nearestStore = {
+                            name: defaultStores[0].name,
+                            lat: coords.lat,
+                            lng: coords.lng,
+                            distance: "Nearest store",
+                        };
+                    }
+                }
+
+                res.status(200).json({
+                    ...cachedData,
+                    nearest_store: nearestStore,
+                });
+
                 return;
             }
         } catch (err) {
@@ -252,8 +298,17 @@ router.get("/:medicine_id", barcodeLimiter, async (req: Request, res: Response):
             nearest_store: nearestStore,
         };
 
+        const cacheData = {
+            brand_name: responseData.brand_name,
+            generic_name: responseData.generic_name,
+            brand_price: responseData.brand_price,
+            jan_aushadhi_price: responseData.jan_aushadhi_price,
+            savings_percentage: responseData.savings_percentage,
+            alternative_name: responseData.alternative_name,
+        };
+
         try {
-            await redisClient.set(cacheKey, JSON.stringify(responseData), {
+            await redisClient.set(cacheKey, JSON.stringify(cacheData), {
                 EX: 86400,
             });
 
